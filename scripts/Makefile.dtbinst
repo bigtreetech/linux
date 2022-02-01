@@ -23,6 +23,11 @@ $(dst)/%: $(obj)/%
 	$(call cmd,dtb_install)
 
 dtbs := $(patsubst $(obj)/%,%,$(call read-file, $(obj)/dtbs-list))
+vendor := $(sort $(dir $(filter %.dtb, $(dtbs))))
+subdir := $(sort $(dir $(filter %.dtbo, $(dtbs))))
+
+dtbs += $(patsubst $(obj)/%,%,$(if $(subdir), $(shell cd $(srctree)/$(obj) && find $(subdir) -name '*.scr')))
+dtbs += $(patsubst $(obj)/%,%,$(if $(subdir), $(shell cd $(srctree)/$(obj) && find $(subdir) -name 'README.*-overlays')))
 
 ifdef CONFIG_ARCH_WANT_FLAT_DTB_INSTALL
 
@@ -33,7 +38,12 @@ endef
 
 $(foreach d, $(sort $(dir $(dtbs))), $(eval $(call gen_install_rules,$(d))))
 
-dtbs := $(notdir $(dtbs))
+# Armbian uses subdirectories <overlay> for arm
+# and <allwinner/overlay> for arm64.
+# delete the vendor's directory if the target architecture is an arm.
+ifdef CONFIG_ARM
+dtbs := $(patsubst $(vendor)%,%,$(dtbs))
+endif
 
 endif # CONFIG_ARCH_WANT_FLAT_DTB_INSTALL
 
