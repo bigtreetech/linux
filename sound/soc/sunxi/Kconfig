@@ -75,4 +75,22 @@ config SND_SUN8I_ADDA_PR_REGMAP
 	tristate
 	select REGMAP
 
+config SND_SOC_SUN50I_AHUB
+	bool "Allwinner H616 Audio Hub Support for ASoc"
+	select REGMAP_MMIO
+	default n
+	help
+          Say Y or M if you want to using ahub module.
+
+config SND_SOC_SUN50I_HDMI
+        bool "ASoc support for Allwinner H616 HDMI"
+        select SND_SOC_GENERIC_DMAENGINE_PCM
+        select DRM_DW_HDMI_I2S_AUDIO
+        select SND_SOC_HDMI_CODEC
+        select REGMAP_MMIO
+        default n
+        help
+           Say Y or M here if you want to add support for SoC hdmi audio on Allwinner
+	   H616 boards.
+
 endmenu

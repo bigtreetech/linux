@@ -428,13 +428,9 @@ static int hdmi_codec_startup(struct snd_pcm_substream *substream,
 {
 	struct hdmi_codec_priv *hcp = snd_soc_dai_get_drvdata(dai);
 	bool tx = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
-	bool has_capture = !hcp->hcd.no_i2s_capture;
-	bool has_playback = !hcp->hcd.no_i2s_playback;
 	int ret = 0;
 
-	if (!((has_playback && tx) || (has_capture && !tx)))
-		return 0;
-
+#if ! defined(CONFIG_SND_SOC_SUN50I_HDMI)
 	mutex_lock(&hcp->lock);
 	if (hcp->busy) {
 		dev_err(dai->dev, "Only one simultaneous stream supported!\n");
@@ -447,6 +443,7 @@ static int hdmi_codec_startup(struct snd_pcm_substream *substream,
 		if (ret)
 			goto err;
 	}
+#endif
 
 	if (tx && hcp->hcd.ops->get_eld) {
 		ret = hcp->hcd.ops->get_eld(dai->dev->parent, hcp->hcd.data,
@@ -473,19 +470,15 @@ static void hdmi_codec_shutdown(struct snd_pcm_substream *substream,
 				struct snd_soc_dai *dai)
 {
 	struct hdmi_codec_priv *hcp = snd_soc_dai_get_drvdata(dai);
-	bool tx = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
-	bool has_capture = !hcp->hcd.no_i2s_capture;
-	bool has_playback = !hcp->hcd.no_i2s_playback;
 
-	if (!((has_playback && tx) || (has_capture && !tx)))
-		return;
-
+#if ! defined(CONFIG_SND_SOC_SUN50I_HDMI)
 	hcp->chmap_idx = HDMI_CODEC_CHMAP_IDX_UNKNOWN;
 	hcp->hcd.ops->audio_shutdown(dai->dev->parent, hcp->hcd.data);
 
 	mutex_lock(&hcp->lock);
 	hcp->busy = false;
 	mutex_unlock(&hcp->lock);
+#endif
 }
 
 static int hdmi_codec_fill_codec_params(struct snd_soc_dai *dai,
@@ -1055,6 +1048,15 @@ static int hdmi_codec_probe(struct platform_device *pdev)
 			__func__, ret);
 		return ret;
 	}
+
+#if defined(CONFIG_SND_SOC_SUN50I_HDMI)
+	if (hcp->hcd.ops->audio_startup) {
+		ret = hcp->hcd.ops->audio_startup(dev, hcp->hcd.data);
+		if (ret)
+			return 0;
+	}
+#endif
+
 	return 0;
 }
 
