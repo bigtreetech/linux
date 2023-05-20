@@ -27,3 +27,10 @@ config LEDS_QCOM_LPG
 	  If compiled as a module, the module will be named leds-qcom-lpg.
 
 endif # LEDS_CLASS_MULTICOLOR
+
+config LEDS_WS2812
+	tristate "WS2812 RGB support for allwinner H616"
+	depends on PINCTRL_SUN50I_H616
+
+	help
+	  Say Y here if you want to use the WS2812.
