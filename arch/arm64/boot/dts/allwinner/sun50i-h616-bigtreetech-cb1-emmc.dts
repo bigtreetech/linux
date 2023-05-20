@@ -1,0 +1,116 @@
+// SPDX-License-Identifier: (GPL-2.0+ or MIT)
+/*
+ * Copyright (C) 2023 Alan.Ma <tech@biqu3d.com>.
+ */
+
+/dts-v1/;
+
+#include "sun50i-h616-bigtreetech-cb1.dts"
+
+/ {
+	ws2812: ws2812 {
+		compatible = "rgb-ws2812";
+		pinctrl-names = "default";
+		rgb_cnt = <2>;
+		rgb_value = <0x010000 0x010000>;
+		gpios = <&pio 8 15 GPIO_ACTIVE_LOW>;
+		status = "okay";
+	};
+
+	mcp2515_clock: mcp2515_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency  = <12000000>;
+	};
+
+	i2c_gpio: i2c-gpio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "i2c-gpio";
+		status = "okay";
+
+		gpios = <&pio 8 6 GPIO_ACTIVE_HIGH>, /* SDA  PI6 */
+				<&pio 8 4 GPIO_ACTIVE_HIGH>; /* SCL  PI4 */
+		
+		i2c-gpio,delay-us = <3>; /* 100 kHz */
+		
+		tft_tp: ns2009@48 {
+			compatible = "ti,tsc2007";
+			reg = <0x48>;
+			status = "okay";
+			ti,x-plate-ohms = <660>;
+			ti,rt-thr = <3000>;
+			ti,fuzzx = <32>;
+			ti,fuzzy = <16>;
+			i2c,ignore-nak = <1>;
+		};
+
+		light: bh1750@5c {
+			compatible = "rohm,bh1750";
+			reg = <0x5c>;
+			status = "okay";
+		};
+	};
+};
+
+&mmc2 {
+	vmmc-supply = <&reg_dldo1>;
+
+	no-1-8-v;
+	bus-width = <8>;
+	non-removable;
+	status = "okay";
+};
+
+&pio {
+	can0_pin_irq: can0_pin_irq {
+		pins = "PI3";
+		function = "irq";
+		bias-pull-up;
+	};
+};
+
+&spi1 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi1_pins>;
+	cs-gpios = <&pio 8 5 GPIO_ACTIVE_HIGH>,		/* PI5 */
+				<&pio 8 14 GPIO_ACTIVE_HIGH>,	/* PI14 */
+				<&pio 8 7 GPIO_ACTIVE_HIGH>;	/* PI7 */
+
+	can: mcp2515@0 {
+		status = "okay";
+		compatible = "microchip,mcp2515";
+		reg = <0x0>;
+		clocks = <&mcp2515_clock>;
+		spi-max-frequency = <12500000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&can0_pin_irq>;
+		interrupt-parent = <&pio>;
+		interrupts = <8 3 0x08>; /* PI3 IRQ_TYPE_LEVEL_LOW */
+		vdd-supply = <&reg_vcc33_wifi>;
+		xceiver-supply = <&reg_vcc33_wifi>;
+	};
+
+	tft_35: st7789v@1 {
+		status = "okay";
+		compatible = "sitronix,st7796s";
+		reg = <1>;
+		spi-max-frequency =<12500000>;
+		dc-gpios  = <&pio 8 15 GPIO_ACTIVE_HIGH>; /* PI15 */
+		fps =<60>;
+		buswidth = <8>;
+		rotate =<0>;
+		width = <480>;
+		height = <320>;
+		bpp = <24>;
+		bgr;
+		regwidth = <8>;
+		debug = <0x00>;	 //0x20 show fps
+		txbuflen = <307200>;
+		spi-cpol;
+		spi-cpha;
+	};
+};
