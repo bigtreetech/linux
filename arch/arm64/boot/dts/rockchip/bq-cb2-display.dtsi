@@ -1,0 +1,120 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2020 Rockchip Electronics Co., Ltd.
+ *
+ */
+
+&route_dsi0 {
+    status = "disabled";//"okay";
+    connect = <&vp0_out_dsi0>;
+};
+
+&video_phy0 {
+    status = "disabled";//"okay";
+};
+
+&dsi0_in_vp0 {
+    status = "disabled";//"okay";
+};
+
+&dsi0_in_vp1 {
+    status = "disabled";
+};
+
+&route_dsi1 {
+    status = "disabled"; // //  "okay";          +0
+    connect = <&vp1_out_dsi1>;
+};
+
+&video_phy1 {
+    status = "disabled";  // "okay";            +1
+};
+
+&dsi1_in_vp0 {
+    status = "disabled"; 
+};
+
+&dsi1_in_vp1 {
+    status = "disabled"; //status = "okay";     +2
+};
+
+//&route_hdmi {
+//	status = "disabled";//"okay";//"disabled";
+//	connect = <&vp1_out_hdmi>;
+//};
+//
+//&hdmi {
+//	status = "disabled";//;"okay"
+//};
+//
+//&hdmi_in_vp0 {
+//	status = "disabled";
+//};
+
+&hdmi_in_vp1 {
+	status = "disabled";
+};
+
+&dsi1 {
+    status = "disabled";   //"disabled";                                       
+	dsi1_panel: dsi-panel@0 {
+				compatible = "raspits,tc358762";
+				reg = <0x0>;
+				status = "okay"; //"disabled";
+
+				ports {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					port@0 {
+						reg = <0>;
+						panel_in_dsi1: endpoint {
+							remote-endpoint = <&dsi1_out_bridge>;    //+3
+							status = "disabled";  //status ="okay";
+						};
+					};
+				};
+	};
+
+	
+    ports {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        port@1 {
+            reg = <1>;
+            dsi1_out_bridge: endpoint {
+                remote-endpoint = <&panel_in_dsi1>;
+            };
+        };
+	};
+};
+
+&i2c2 {
+	status = "okay";
+	pinctrl-names = "default";
+	clock-frequency = <100000>;
+	pinctrl-0 = <&i2c2m1_xfer>;
+	avdd-1v8-supply = <&vcca1v8_image>;
+	avdd-0v9-supply = <&vdda0v9_image>;
+	power-domains = <&power RK3568_PD_VI>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	backlight_dsi1:backlight@45{ /*背光地址0x45*/
+		compatible = "raspberrypi,7inch-touchscreen-panel-regulator";
+		reg = <0x45>;
+		status = "okay";
+    };
+	ft5x06_ts@38 { /*触屏地址0x38*/
+		compatible = "rockpi_ft5406", "ft5x06";
+		reg = <0x38>;
+		//interrupt-parent = <&gpio0>;
+		//interrupts = <13 IRQ_TYPE_LEVEL_LOW>;
+		//power-domains = <&power RK3568_PD_VI>;
+		//reset-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_LOW>;
+		touchscreen-size-x = < 800 >;
+		touchscreen-size-y = < 480 >;
+		status = "okay";
+	};	
+};
+

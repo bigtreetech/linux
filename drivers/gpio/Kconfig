@@ -1314,6 +1314,12 @@ config GPIO_PCIE_IDIO_24
 	  when any of the inputs change state (low to high or high to low).
 	  Input filter control is not supported by this driver, and the input
 	  filters are deactivated by this driver.
+	  
+config GPIO_BIGTREETECH_USBPWRIO
+	tristate "bigtree usb power io driver"
+	default y
+	help
+		bigtree usb power io driver
 
 config GPIO_RDC321X
 	tristate "RDC R-321x GPIO support"

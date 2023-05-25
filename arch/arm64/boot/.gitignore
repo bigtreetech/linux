@@ -1,2 +1,4 @@
 Image
 Image.gz
+*.dtb*
+*.scr

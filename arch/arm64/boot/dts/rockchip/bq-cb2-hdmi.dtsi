@@ -1,0 +1,32 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2020 Rockchip Electronics Co., Ltd.
+ *
+ */
+
+
+&hdmi {
+	status = "disabled"; //"okay";  		 +1
+};
+
+&hdmi_in_vp1 {
+	status = "disabled";
+};
+
+&hdmi_in_vp0 {
+	status = "disabled"; //status = "okay";  +2
+};
+
+&dsi1_in_vp0 {
+	status = "disabled"; //status = "okay";
+};
+
+// &hdmi_sound {
+// 	status = "okay";
+// };
+&route_hdmi {
+	status = "okay";
+	connect = <&vp0_out_hdmi>;              //+3
+};
+
+

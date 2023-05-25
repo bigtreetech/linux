@@ -945,7 +945,7 @@
 		reg = <0x0 0xfdd70000 0x0 0x10>;
 		#pwm-cells = <3>;
 		pinctrl-names = "active";
-		pinctrl-0 = <&pwm0m0_pins>;
+		pinctrl-0 = <&pwm0m1_pins>;
 		clocks = <&pmucru CLK_PWM0>, <&pmucru PCLK_PWM0>;
 		clock-names = "pwm", "pclk";
 		status = "disabled";
@@ -3006,8 +3006,8 @@
 		dmas = <&dmac0 22>, <&dmac0 23>;
 		dma-names = "tx", "rx";
 		pinctrl-names = "default", "high_speed";
-		pinctrl-0 = <&spi1m0_cs0 &spi1m0_cs1 &spi1m0_pins>;
-		pinctrl-1 = <&spi1m0_cs0 &spi1m0_cs1 &spi1m0_pins_hs>;
+	//	pinctrl-0 = <&spi1m0_cs0 &spi1m0_cs1 &spi1m0_pins>;
+	//	pinctrl-1 = <&spi1m0_cs0 &spi1m0_cs1 &spi1m0_pins_hs>;
 		status = "disabled";
 	};
 
@@ -3266,7 +3266,7 @@
 		reg = <0x0 0xfe700000 0x0 0x10>;
 		#pwm-cells = <3>;
 		pinctrl-names = "active";
-		pinctrl-0 = <&pwm12m0_pins>;
+		pinctrl-0 = <&pwm12m1_pins>;
 		clocks = <&cru CLK_PWM3>, <&cru PCLK_PWM3>;
 		clock-names = "pwm", "pclk";
 		status = "disabled";
@@ -3277,7 +3277,7 @@
 		reg = <0x0 0xfe700010 0x0 0x10>;
 		#pwm-cells = <3>;
 		pinctrl-names = "active";
-		pinctrl-0 = <&pwm13m0_pins>;
+		pinctrl-0 = <&pwm13m1_pins>;
 		clocks = <&cru CLK_PWM3>, <&cru PCLK_PWM3>;
 		clock-names = "pwm", "pclk";
 		status = "disabled";
@@ -3288,7 +3288,7 @@
 		reg = <0x0 0xfe700020 0x0 0x10>;
 		#pwm-cells = <3>;
 		pinctrl-names = "active";
-		pinctrl-0 = <&pwm14m0_pins>;
+		pinctrl-0 = <&pwm14m1_pins>;
 		clocks = <&cru CLK_PWM3>, <&cru PCLK_PWM3>;
 		clock-names = "pwm", "pclk";
 		status = "disabled";
@@ -3301,7 +3301,7 @@
 			     <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;
 		#pwm-cells = <3>;
 		pinctrl-names = "active";
-		pinctrl-0 = <&pwm15m0_pins>;
+		pinctrl-0 = <&pwm15m1_pins>;
 		clocks = <&cru CLK_PWM3>, <&cru PCLK_PWM3>;
 		clock-names = "pwm", "pclk";
 		status = "disabled";

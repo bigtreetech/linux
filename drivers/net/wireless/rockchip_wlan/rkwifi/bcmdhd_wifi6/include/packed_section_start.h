@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Declare directives for structure packing. No padding will be provided
  * between the members of packed structures, and therefore, there is no
@@ -16,7 +15,7 @@
  * #include <packed_section_end.h>
  *
  *
- * Copyright (C) 1999-2019, Broadcom.
+ * Copyright (C) 2020, Broadcom.
  *
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -32,15 +31,14 @@
  * derived from this software.  The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
- * software in any way with any other Broadcom software provided under a license
- * other than the GPL, without Broadcom's express prior written consent.
  *
- *
- * <<Broadcom-WL-IPTag/Open:>>
- *
- * $Id: packed_section_start.h 776894 2018-08-16 05:50:57Z $
+ * <<Broadcom-WL-IPTag/Dual:>>
  */
+
+/* EFI does not support STATIC_ASSERT */
+#if defined(EFI)
+#define _alignment_test_
+#endif /* EFI */
 
 #ifndef _alignment_test_
 #define _alignment_test_
@@ -68,7 +66,7 @@ typedef struct T4 {
 #define VARIABLE_IS_NOT_USED __attribute__ ((unused))
 #else
 #define VARIABLE_IS_NOT_USED
-#endif // endif
+#endif
 static void alignment_test(void);
 static void
 VARIABLE_IS_NOT_USED alignment_test(void)
@@ -86,15 +84,29 @@ VARIABLE_IS_NOT_USED alignment_test(void)
 	#error "BWL_PACKED_SECTION is already defined!"
 #else
 	#define BWL_PACKED_SECTION
-#endif // endif
+#endif
 
 #if defined(BWL_DEFAULT_PACKING)
 	/* generate an error if BWL_DEFAULT_PACKING is defined */
 	#error "BWL_DEFAULT_PACKING not supported any more."
 #endif /* BWL_PACKED_SECTION */
 
+#if defined(_MSC_VER)
+#pragma warning(disable:4103)
+#pragma pack(push)
+#pragma pack(1)
+#endif
+
+#if defined(__GNUC__) && defined(EFI)
+#pragma pack(push)
+#pragma pack(1)
+#endif
+
 /* Declare compiler-specific directives for structure packing. */
-#if defined(__GNUC__) || defined(__lint)
+#if defined(_MSC_VER)
+	#define	BWL_PRE_PACKED_STRUCT
+	#define	BWL_POST_PACKED_STRUCT
+#elif defined(__GNUC__) || defined(__lint)
 	#define	BWL_PRE_PACKED_STRUCT
 	#define	BWL_POST_PACKED_STRUCT	__attribute__ ((packed))
 #elif defined(__CC_ARM)
@@ -102,4 +114,4 @@ VARIABLE_IS_NOT_USED alignment_test(void)
 	#define	BWL_POST_PACKED_STRUCT
 #else
 	#error "Unknown compiler!"
-#endif // endif
+#endif

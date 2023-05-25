@@ -688,7 +688,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 	struct panel_simple *panel;
 	const char *cmd_type;
 	int err;
-
+	dev_err(dev, "panel_simple_probe exec start-----------------------------\n");
 	panel = devm_kzalloc(dev, sizeof(*panel), GFP_KERNEL);
 	if (!panel)
 		return -ENOMEM;
@@ -700,7 +700,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 	panel->supply = devm_regulator_get(dev, "power");
 	if (IS_ERR(panel->supply))
 		return PTR_ERR(panel->supply);
-
+	dev_err(dev, "get power okay-----------------------------\n");
 	panel->supplies[0].supply = "vsp";
 	panel->supplies[1].supply = "vsn";
 
@@ -717,7 +717,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 			dev_err(dev, "failed to get enable GPIO: %d\n", err);
 		return err;
 	}
-
+	dev_err(dev, "get enable gpio okay-----------------------------\n");
 	panel->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_ASIS);
 	if (IS_ERR(panel->reset_gpio)) {
 		err = PTR_ERR(panel->reset_gpio);
@@ -725,7 +725,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 			dev_err(dev, "failed to get reset GPIO: %d\n", err);
 		return err;
 	}
-
+	dev_err(dev, "get reset gpio okay-----------------------------\n");
 	if (of_property_read_string(dev->of_node, "rockchip,cmd-type",
 				    &cmd_type))
 		panel->cmd_type = CMD_TYPE_DEFAULT;
@@ -788,7 +788,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 		if (!panel->backlight)
 			return -EPROBE_DEFER;
 	}
-
+	dev_err(dev, "drm get backlight.........okay....................................\n");
 	ddc = of_parse_phandle(dev->of_node, "ddc-i2c-bus", 0);
 	if (ddc) {
 		panel->ddc = of_find_i2c_adapter_by_node(ddc);
@@ -803,11 +803,11 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 	drm_panel_init(&panel->base);
 	panel->base.dev = dev;
 	panel->base.funcs = &panel_simple_funcs;
-
+	dev_err(dev, "drm panel init-----------------------------\n");
 	err = drm_panel_add(&panel->base);
 	if (err < 0)
 		goto free_ddc;
-
+	dev_err(dev, "drm panel add okay-----------------------------\n");
 	dev_set_drvdata(dev, panel);
 
 	return 0;
@@ -2815,6 +2815,34 @@ static const struct panel_desc winstar_wf35ltiacd = {
 	},
 	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
 };
+/*
+static const struct drm_display_mode raspberrypi_7inch_mode = {
+		.clock = 25979400 / 1000,
+		.hdisplay = 800,
+		.hsync_start = 800 + 2,
+		.hsync_end = 800 + 2 + 2,
+		.htotal = 800 + 2 + 2 + 46,
+		.vdisplay = 480,
+		.vsync_start = 480 + 7,
+		.vsync_end = 480 + 7 + 2,
+		.vtotal = 480 + 7 + 2 + 21,
+		.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
+};
+
+static const struct  panel_desc raspberrypi_7inch = {	
+	
+		.modes = &raspberrypi_7inch_mode,
+		.num_modes = 1,
+		.bpc = 8,
+		.size = {
+			.width = 154,
+			.height = 86,
+		},
+		//.connector_type = DRM_MODE_CONNECTOR_DSI,
+		.bus_format = MEDIA_BUS_FMT_RGB888_1X24,	
+};
+
+*/
 
 static const struct of_device_id platform_of_match[] = {
 	{
@@ -3074,7 +3102,10 @@ static const struct of_device_id platform_of_match[] = {
 		.compatible = "winstar,wf35ltiacd",
 		.data = &winstar_wf35ltiacd,
 #endif /* !CONFIG_DRM_PANEL_SIMPLE_OF_ONLY */
-	}, {
+	}, /*{
+		.compatible = "raspberrypi,7inch-dsi",
+		.data = &raspberrypi_7inch,
+	},*/{
 		/* sentinel */
 	}
 };
@@ -3346,6 +3377,34 @@ static const struct panel_desc_dsi panasonic_vvx10f004b00 = {
 	.lanes = 4,
 };
 
+static const struct drm_display_mode raspberrypi_7inch_mode = {
+		.clock = 25979400 / 1000,
+		.hdisplay = 800,
+		.hsync_start = 800 + 2,
+		.hsync_end = 800 + 2 + 2,
+		.htotal = 800 + 2 + 2 + 46,
+		.vdisplay = 480,
+		.vsync_start = 480 + 7,
+		.vsync_end = 480 + 7 + 2,
+		.vtotal = 480 + 7 + 2 + 21,
+		.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
+};
+
+static const struct  panel_desc_dsi raspberrypi_7inch = {	
+	.desc={
+		.modes = &raspberrypi_7inch_mode,
+		.num_modes = 1,
+		.bpc = 8,
+		.size = {
+			.width = 154,
+			.height = 86,
+		},
+		//.connector_type = DRM_MODE_CONNECTOR_DSI,
+		.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
+	},
+	.lanes=2,
+};
+
 static const struct of_device_id dsi_of_match[] = {
 	{
 		.compatible = "simple-panel-dsi",
@@ -3368,6 +3427,10 @@ static const struct of_device_id dsi_of_match[] = {
 		.data = &panasonic_vvx10f004b00
 #endif /* !CONFIG_DRM_PANEL_SIMPLE_OF_ONLY */
 	}, {
+		.compatible = "raspberrypi,7inch-dsi",
+		.data = &raspberrypi_7inch
+	},
+	{
 		/* sentinel */
 	}
 };
@@ -3402,7 +3465,7 @@ static int panel_simple_dsi_probe(struct mipi_dsi_device *dsi)
 	struct panel_desc_dsi *d;
 	const struct of_device_id *id;
 	int err;
-
+	dev_err(dev, "panel probe exec-----------------------------------\n");
 	id = of_match_node(dsi_of_match, dsi->dev.of_node);
 	if (!id)
 		return -ENODEV;
@@ -3424,7 +3487,7 @@ static int panel_simple_dsi_probe(struct mipi_dsi_device *dsi)
 	err = panel_simple_probe(&dsi->dev, &desc->desc);
 	if (err < 0)
 		return err;
-
+	dev_err(dev, "panel_simple_probe exec okay-----------------------------------\n");
 	panel = dev_get_drvdata(dev);
 	panel->dsi = dsi;
 
@@ -3438,7 +3501,7 @@ static int panel_simple_dsi_probe(struct mipi_dsi_device *dsi)
 
 		drm_panel_remove(&panel->base);
 	}
-
+	dev_err(dev, "mipi dsi attach-----------------------------------\n");
 	return err;
 }
 

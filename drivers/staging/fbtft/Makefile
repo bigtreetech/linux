@@ -40,3 +40,4 @@ obj-$(CONFIG_FB_FLEX)            += flexfb.o
 
 # Device modules
 obj-$(CONFIG_FB_TFT_FBTFT_DEVICE) += fbtft_device.o
+obj-$(CONFIG_FB_TFT_FBTFT_ST7796S) += fb_st7796s.o

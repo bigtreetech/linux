@@ -858,6 +858,18 @@ config TOUCHSCREEN_PIXCIR
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called pixcir_i2c_ts.
+	  
+config TOUCHSCREEN_ROCKPI_FT5406
+	tristate "RASPITS FT54x6 touchscreens"
+	depends on I2C
+	help
+	  Say Y here if you have a raspits ft5426 touchscreen
+	  controller.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called raspits_ft5426_ts.
 
 config TOUCHSCREEN_WDT87XX_I2C
 	tristate "Weida HiTech I2C touchscreen"

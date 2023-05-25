@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 /** @file dbus.c
  *
  * Hides details of USB / SDIO / SPI interfaces and OS details. It is intended to shield details and
@@ -672,10 +671,15 @@ dbus_get_fw_nvram(dhd_bus_t *dhd_bus, char *pfw_path, char *pnv_path)
 	}
 
 	total_len = actual_fwlen + dhd_bus->nvram_len + nvram_words_pad;
+#if defined(CONFIG_DHD_USE_STATIC_BUF)
+	dhd_bus->image = (uint8*)DHD_OS_PREALLOC(dhd_bus->dhd,
+		DHD_PREALLOC_MEMDUMP_RAM, total_len);
+#else
 	dhd_bus->image = MALLOC(dhd_bus->pub.osh, total_len);
+#endif /* CONFIG_DHD_USE_STATIC_BUF */
 	dhd_bus->image_len = total_len;
 	if (dhd_bus->image == NULL) {
-		DBUSERR(("%s: malloc failed!\n", __FUNCTION__));
+		DBUSERR(("%s: malloc failed! size=%d\n", __FUNCTION__, total_len));
 		goto err;
 	}
 
@@ -764,7 +768,11 @@ dbus_do_download(dhd_bus_t *dhd_bus, char *pfw_path, char *pnv_path)
 		err = DBUS_ERR;
 
 	if (dhd_bus->image) {
+#if defined(CONFIG_DHD_USE_STATIC_BUF)
+		DHD_OS_PREFREE(dhd_bus->dhd, dhd_bus->image, dhd_bus->image_len);
+#else
 		MFREE(dhd_bus->pub.osh, dhd_bus->image, dhd_bus->image_len);
+#endif /* CONFIG_DHD_USE_STATIC_BUF */
 		dhd_bus->image = NULL;
 		dhd_bus->image_len = 0;
 	}
@@ -1055,7 +1063,7 @@ dbus_if_send_irb_timeout(void *handle, dbus_irb_tx_t *txirb)
  * When lower DBUS level signals that a send IRB completed, either successful or not, the higher
  * level (e.g. dhd_linux.c) has to be notified, and transmit flow control has to be evaluated.
  */
-static void BCMFASTPATH
+static void
 dbus_if_send_irb_complete(void *handle, dbus_irb_tx_t *txirb, int status)
 {
 	dhd_bus_t *dhd_bus = (dhd_bus_t *) handle;
@@ -1126,7 +1134,7 @@ dbus_if_send_irb_complete(void *handle, dbus_irb_tx_t *txirb, int status)
  * level (e.g. dhd_linux.c) has to be notified, and fresh free receive IRBs may have to be given
  * to lower levels.
  */
-static void BCMFASTPATH
+static void
 dbus_if_recv_irb_complete(void *handle, dbus_irb_rx_t *rxirb, int status)
 {
 	dhd_bus_t *dhd_bus = (dhd_bus_t *) handle;
@@ -2342,8 +2350,9 @@ dhd_dbus_send_complete(void *handle, void *info, int status)
 	if (DHD_PKTTAG_WLFCPKT(PKTTAG(pkt)) &&
 		(dhd_wlfc_txcomplete(dhd, pkt, status == 0) != WLFC_UNSUPPORTED)) {
 		return;
-	}
+	} else
 #endif /* PROP_TXSTATUS */
+	dhd_txcomplete(dhd, pkt, status == 0);
 	PKTFREE(dhd->osh, pkt, TRUE);
 }
 
@@ -2682,9 +2691,6 @@ dhd_bus_devreset(dhd_pub_t *dhdp, uint8 flag)
 		}
 	}
 
-#ifdef PKT_STATICS
-	memset((uint8*) &tx_statics, 0, sizeof(pkt_statics_t));
-#endif
 	return bcmerror;
 }
 
@@ -2781,9 +2787,10 @@ dhd_dbus_probe_cb(void *arg, const char *desc, uint32 bustype,
 	}
 
 	if (!g_pub) {
-		/* Ok, finish the attach to the OS network interface */
-		if (dhd_register_if(pub, 0, TRUE) != 0) {
-			DBUSERR(("%s: dhd_register_if failed\n", __FUNCTION__));
+		/* Ok, have the per-port tell the stack we're open for business */
+		if (dhd_attach_net(bus->dhd, TRUE) != 0)
+		{
+			DBUSERR(("%s: Net attach failed!!\n", __FUNCTION__));
 			goto fail;
 		}
 		pub->hang_report  = TRUE;
