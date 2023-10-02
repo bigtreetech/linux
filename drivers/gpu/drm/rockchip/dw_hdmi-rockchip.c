@@ -711,3 +711,4 @@ struct platform_driver dw_hdmi_rockchip_pltfm_driver = {
 		.of_match_table = dw_hdmi_rockchip_dt_ids,
 	},
 };
+
