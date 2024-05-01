@@ -34,4 +34,12 @@ config SUN4I_EMAC
 	  To compile this driver as a module, choose M here.  The module
 	  will be called sun4i-emac.
 
+config SUNXI_GMAC
+    tristate "Allwinner GMAC support"
+	depends on ARCH_SUNXI
+	depends on OF
+	depends on AC200_PHY_SUNXI
+	select CRC32
+	select MII
+
 endif # NET_VENDOR_ALLWINNER

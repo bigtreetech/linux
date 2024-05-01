@@ -75,6 +75,14 @@ config AC200_PHY
 	help
 	  Fast ethernet PHY as found in X-Powers AC200 multi-function device.
 
+config AC200_PHY_SUNXI
+	tristate "AC200 EPHY(Sunxi)"
+	depends on NVMEM
+	depends on OF
+	depends on MFD_AC200_SUNXI
+	help
+	  Fast ethernet PHY as found in X-Powers AC200(Sunxi) multi-function device.
+
 config AMD_PHY
 	tristate "AMD PHYs"
 	help

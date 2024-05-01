@@ -203,6 +203,16 @@ config MFD_AC200
 	  This driver include only the core APIs. You have to select individual
 	  components like Ethernet PHY or codec under the corresponding menus.
 
+config MFD_AC200_SUNXI
+	tristate "X-Powers AC200 (Sunxi)"
+	select MFD_CORE
+	depends on I2C
+	depends on PWM_SUNXI_ENHANCE
+	help
+	  If you say Y here you get support for the X-Powers AC200 IC.
+	  This driver include only the core APIs. You have to select individual
+	  components like Ethernet PHY or RTC under the corresponding menus.
+
 config MFD_AXP20X
 	tristate
 	select MFD_CORE
