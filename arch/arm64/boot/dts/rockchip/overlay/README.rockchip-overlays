@@ -1,0 +1,17 @@
+## Introduction
+
+This document describes overlays provided in the kernel packages.
+
+## Platform and Chips:
+
+rockchip (Rockchip)
+- rk3566
+
+## usage
+
+Kernel provided DT overlay files are in
+  /boot/dtb/rockchip/overlay/
+
+/boot/armbianEnv.txt contents:
+
+overlays=rtc-rk808 rtc-pcf8563 etc
