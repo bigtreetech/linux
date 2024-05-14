@@ -97,6 +97,7 @@ static const struct mfd_cell rk817s[] = {
 	},
 	{
 		.name = "rk808-rtc",
+		.of_compatible = "rk808-rtc",
 		.num_resources = ARRAY_SIZE(rk817_rtc_resources),
 		.resources = &rk817_rtc_resources[0],
 	},
