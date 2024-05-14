@@ -540,6 +540,13 @@
 		touchscreen-inverted-x;
 		touchscreen-inverted-y;
 	};
+
+	rtc_pcf8563: pcf8563@51 {
+		status = "disabled";
+		compatible = "nxp,pcf8563";
+		reg = <0x51>;
+		#clock-cells = <0>;
+	};
 };
 
 &i2c3 {
