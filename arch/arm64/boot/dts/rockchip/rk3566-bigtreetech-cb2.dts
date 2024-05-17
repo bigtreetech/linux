@@ -38,17 +38,22 @@
 		status = "okay";
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
-		simple-audio-card,name = "rockchip,rk809-codec";
+		simple-audio-card,name = "Analog RK809";
 		simple-audio-card,mclk-fs = <256>;
-		simple-audio-card,widgets = "Headphones", "Headphones Jack";
+		simple-audio-card,widgets =
+			"Microphone", "Mic Jack",
+			"Headphone", "Headphones",
+			"Speaker", "Speaker";
 		simple-audio-card,routing =
-			"Mic Jack", "MICBIAS1",
-			"IN1P", "Mic Jack",
-			"Headphone Jack", "HPOL",
-			"Headphone Jack", "HPOR";
+			"MICL", "Mic Jack",
+			"Headphones", "HPOL",
+			"Headphones", "HPOR",
+			"Speaker", "SPKO";
+
 		simple-audio-card,cpu {
 			sound-dai = <&i2s1_8ch>;
 		};
+
 		simple-audio-card,codec {
 			sound-dai = <&rk809>;
 		};
@@ -314,6 +319,8 @@
 		wakeup-source;
 		#clock-cells = <1>;
 		clock-output-names = "rk808-clkout1", "rk808-clkout2";
+		clock-names = "mclk";
+		clocks = <&cru I2S1_MCLKOUT_TX>;
 		#sound-dai-cells = <0>;
 
 		vcc1-supply = <&vcc3v3_sys>;
@@ -329,6 +336,10 @@
 		rtc_rk808: rk808_rtc {
 			compatible = "rk808-rtc";
 			status = "disabled";
+		};
+
+		rk809_codec: codec {
+			rockchip,mic-in-differential;
 		};
 
 		regulators {
@@ -561,7 +572,7 @@
 
 &i2s1_8ch {
 	status = "okay";
-	rockchip,clk-trcm = <1>;
+	rockchip,trcm-sync-tx-only;
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2s1m0_sclktx
 		     &i2s1m0_lrcktx
