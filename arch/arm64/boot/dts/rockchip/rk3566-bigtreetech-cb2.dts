@@ -80,6 +80,26 @@
 		compatible = "linux,bt-sco";
 	};
 
+	spdif_dit: spdif-dit {
+		status = "okay";
+		#sound-dai-cells = <0>;
+		compatible = "linux,spdif-dit";
+	};
+
+	spdif_sound: spdif-sound {
+		status = "okay";
+		compatible = "simple-audio-card";
+		simple-audio-card,name = "SPDIF";
+
+		simple-audio-card,cpu {
+			sound-dai = <&spdif>;
+		};
+
+		simple-audio-card,codec {
+			sound-dai = <&spdif_dit>;
+		};
+	};
+
 	dc_12v: dc-12v {
 		compatible = "regulator-fixed";
 		regulator-name = "dc_12v";
@@ -602,6 +622,10 @@
 };
 
 &i2s2_2ch {
+	status = "okay";
+};
+
+&spdif {
 	status = "okay";
 };
 
