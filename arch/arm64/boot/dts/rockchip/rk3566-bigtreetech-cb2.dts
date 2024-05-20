@@ -59,6 +59,27 @@
 		};
 	};
 
+	bt_sound: bt-sound {
+		status = "okay";
+		compatible = "simple-audio-card";
+		simple-audio-card,format = "dsp_b";
+		simple-audio-card,name = "Bluetooth";
+		simple-audio-card,bitclock-inversion = <1>;
+		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,cpu {
+			sound-dai = <&i2s2_2ch>;
+		};
+		simple-audio-card,codec {
+			sound-dai = <&bt_sco_codec>;
+		};
+	};
+
+	bt_sco_codec: bt-sco-codec {
+		status = "okay";
+		#sound-dai-cells = <0>;
+		compatible = "linux,bt-sco";
+	};
+
 	dc_12v: dc-12v {
 		compatible = "regulator-fixed";
 		regulator-name = "dc_12v";
@@ -578,6 +599,10 @@
 		     &i2s1m0_lrcktx
 		     &i2s1m0_sdi0
 		     &i2s1m0_sdo0>;
+};
+
+&i2s2_2ch {
+	status = "okay";
 };
 
 &mdio1 {
