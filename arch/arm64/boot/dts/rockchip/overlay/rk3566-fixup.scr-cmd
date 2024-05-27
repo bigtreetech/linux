@@ -38,3 +38,7 @@ fi
 if test "${console}" = "display"; then 
 	setenv consoleargs "console=ttyS2,1500000 ${consoleargs}"; 
 fi
+
+if test -n "${tft35_spi_rotate}"; then
+	fdt set /spi@fe620000/st7796@1 rotate "<${tft35_spi_rotate}>"
+fi
