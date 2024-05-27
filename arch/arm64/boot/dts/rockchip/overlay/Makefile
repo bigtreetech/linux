@@ -3,7 +3,8 @@ dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
 	rk3566-rtc-rk808.dtbo\
 	rk3566-rtc-pcf8563.dtbo\
 	rk3566-mcp2515.dtbo\
-	rk3566-tft35_spi.dtbo
+	rk3566-tft35_spi.dtbo\
+	rk3566-ir.dtbo
 
 scr-$(CONFIG_ARCH_ROCKCHIP) += \
 	rk3566-fixup.scr

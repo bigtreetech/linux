@@ -8,6 +8,7 @@
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/pinctrl/rockchip.h>
 #include <dt-bindings/soc/rockchip,vop2.h>
+#include <dt-bindings/input/linux-event-codes.h>
 
 #include "rk3566.dtsi"
 
@@ -723,6 +724,38 @@
 		txbuflen = <307200>;
 		spi-cpol;
 		spi-cpha;
+	};
+};
+
+&pwm3 {
+	status = "disabled";
+	compatible = "rockchip,remotectl-pwm";
+	remote_pwm_id = <3>;
+	handle_cpu_id = <1>;
+	remote_support_psci = <0>;
+
+	ir_key {
+		rockchip,usercode = <0xff00>;
+		rockchip,key_table =
+			<0xba   KEY_CHANNELDOWN>,
+			<0xb9   KEY_CHANNEL>,
+			<0xb8   KEY_CHANNELUP>,
+			<0xbb   KEY_VIDEO_PREV>,
+			<0xbf   KEY_VIDEO_NEXT>,
+			<0xbc   KEY_PLAYPAUSE>,
+			<0xf8   KEY_VOLUMEDOWN>,
+			<0xea   KEY_VOLUMEUP>,
+			<0xf6   KEY_EQUAL>,
+			<0xe9   KEY_0>,
+			<0xf3   KEY_1>,
+			<0xe7   KEY_2>,
+			<0xa1   KEY_3>,
+			<0xf7   KEY_4>,
+			<0xe3   KEY_5>,
+			<0xa5   KEY_6>,
+			<0xbd   KEY_7>,
+			<0xad   KEY_8>,
+			<0xb5   KEY_9>;
 	};
 };
 
