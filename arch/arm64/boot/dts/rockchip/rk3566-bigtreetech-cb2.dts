@@ -609,7 +609,7 @@
 		reg = <0x45>;
 	};
 
-	touchscreen@38 {
+	tp_ft5406@38 {
 		compatible = "edt,edt-ft5406";
 		reg = <0x38>;
 
@@ -628,9 +628,20 @@
 };
 
 &i2c3 {
+	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c3m0_xfer>;
-	status = "okay";
+
+	tp_ns2009: ns2009@48 {
+		status = "disabled";
+		compatible = "ti,tsc2007";
+		reg = <0x48>;
+		ti,x-plate-ohms = <660>;
+		ti,y-plate-ohms = <660>;
+		ti,fuzzx = <32>;
+		ti,fuzzy = <16>;
+		i2c,ignore-nak = <1>;
+	};
 };
 
 &i2s0_8ch {
@@ -677,7 +688,8 @@
 	status = "disabled";
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi1m1_pins>;
-	cs-gpios = <&gpio4 RK_PC6 GPIO_ACTIVE_LOW>;
+	cs-gpios = <&gpio4 RK_PC6 GPIO_ACTIVE_LOW>,
+		<&gpio3 RK_PA1 GPIO_ACTIVE_LOW>;
 
 	can: mcp2515@0 {
 		status = "disabled";
@@ -691,6 +703,26 @@
 		interrupt-parent = <&gpio4>;
 		vdd-supply = <&vcc3v3_sys>;
 		xceiver-supply = <&vcc3v3_sys>;
+	};
+
+	tft_35: st7796@1 {
+		status = "disabled";
+		compatible = "sitronix,st7796s";
+		dc-gpios  = <&gpio0 RK_PC7 GPIO_ACTIVE_HIGH>;
+		reg = <1>;
+		spi-max-frequency =<10000000>;
+		fps =<60>;
+		buswidth = <8>;
+		rotate =<0>;
+		width = <480>;
+		height = <320>;
+		bpp = <24>;
+		bgr;
+		regwidth = <8>;
+		debug = <0x00>;
+		txbuflen = <307200>;
+		spi-cpol;
+		spi-cpha;
 	};
 };
 
