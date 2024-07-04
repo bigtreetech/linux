@@ -1077,6 +1077,7 @@ static int yt8531_probe(struct phy_device *phydev)
 	struct device_node *node = phydev->mdio.dev.of_node;
 	u16 mask, val;
 	u32 freq;
+	printk(KERN_EMERG "alan: yt8531_probe\n");
 
 	if (of_property_read_u32(node, "motorcomm,clk-out-frequency-hz", &freq))
 		freq = YTPHY_DTS_OUTPUT_CLK_DIS;
@@ -1609,6 +1610,9 @@ static int yt8531_config_init(struct phy_device *phydev)
 {
 	struct device_node *node = phydev->mdio.dev.of_node;
 	int ret;
+
+
+	printk(KERN_EMERG "alan: yt8531_config_init\n");
 
 	ret = ytphy_rgmii_clk_delay_config_with_lock(phydev);
 	if (ret < 0)

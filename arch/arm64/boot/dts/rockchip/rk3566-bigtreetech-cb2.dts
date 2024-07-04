@@ -228,6 +228,14 @@
 		#clock-cells = <0>;
 		clock-frequency  = <12000000>;
 	};
+
+	ov5647_clock: ov5647-clock {
+		status = "okay";
+		compatible = "fixed-clock";
+		clock-frequency = <25000000>;
+		clock-output-names = "ov5647_clock";
+		#clock-cells = <0>;
+	};
 };
 
 &combphy1 {
@@ -599,11 +607,7 @@
 	pinctrl-names = "default";
 	clock-frequency = <100000>;
 	pinctrl-0 = <&i2c2m1_xfer>;
-	avdd-1v8-supply = <&vcca1v8_image>;
-	avdd-0v9-supply = <&vdda0v9_image>;
 	power-domains = <&power RK3568_PD_VI>;
-	#address-cells = <1>;
-	#size-cells = <0>;
 
 	reg_display: regulator@45 {
 		compatible = "raspberrypi,7inch-touchscreen-panel-regulator";
@@ -625,6 +629,108 @@
 		compatible = "nxp,pcf8563";
 		reg = <0x51>;
 		#clock-cells = <0>;
+	};
+
+	ov5647@36 {
+		status = "okay";  
+		compatible = "ovti,ov5647";
+		reg = <0x36>;
+		clocks = <&ov5647_clock>;
+		clock-names = "ext_cam_ov5647_clk";
+		power-domains = <&power RK3568_PD_VI>;
+		pwdn-gpios = <&gpio4 RK_PA7 GPIO_ACTIVE_LOW>;
+		dsensor-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_LOW>;
+		rockchip,camera-module-index = <1>;
+		rockchip,camera-module-facing = "front";
+		rockchip,camera-module-name = "LMM248";
+		rockchip,camera-module-lens-name = "YXC-M804A2";
+		
+		
+		port {
+			ov5647_out: endpoint {
+				remote-endpoint =<&mipi_in_ucam0>;//split:dphy1_in full: mipi_in_ucam0
+                data-lanes = <1 2>;
+            };
+        };
+	};
+};
+
+//&csi_dphy {
+//	status = "okay";
+//};
+
+&csi2_dphy_hw{
+	status = "okay";
+};
+
+&csi2_dphy0 {
+	status = "okay";
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			mipi_in_ucam0: endpoint@1 {
+				reg = <1>;
+				remote-endpoint = <&ov5647_out>;
+				data-lanes = <1 2>;
+			};
+
+		};
+
+		port@1 {
+			reg = <1>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			dphy0_out: endpoint@1 {
+				reg = <1>;
+				remote-endpoint = <&isp0_in>;
+			};
+		};
+	};
+};
+
+//&vicap {
+//	status = "okay";
+//};
+
+//&vicap_mmu {
+//	status = "okay";
+//};
+
+&rkcif_mmu {
+	status = "okay";
+};
+
+&rkcif {
+	status = "okay";
+};
+
+&rkisp {
+	status = "okay";
+};
+
+&rkisp_mmu {
+	status = "okay";
+};
+
+&rkisp_vir0 {
+	status = "okay";
+
+	port {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		isp0_in: endpoint@0 {
+			reg = <0>;
+			remote-endpoint = <&dphy0_out>;
+		};
 	};
 };
 
@@ -845,10 +951,11 @@
 	pmuio1-supply = <&vcc3v3_pmu>;
 	pmuio2-supply = <&vcc3v3_pmu>;
 	vccio1-supply = <&vccio_acodec>;
+	vccio2-supply = <&vcc_1v8>;
 	vccio3-supply = <&vccio_sd>;
 	vccio4-supply = <&vcc_1v8>;
 	vccio5-supply = <&vcc_3v3>;
-	vccio6-supply = <&vcc_1v8>;
+	vccio6-supply = <&vcc_3v3>;
 	vccio7-supply = <&vcc_3v3>;
 };
 

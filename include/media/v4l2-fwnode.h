@@ -411,4 +411,14 @@ int v4l2_fwnode_device_parse(struct device *dev,
 #define v4l2_connector_last_link(v4l2c)					       \
 	list_last_entry(&(v4l2c)->links, struct v4l2_connector_link, head)
 
+typedef int (*parse_endpoint_func)(struct device *dev,
+				  struct v4l2_fwnode_endpoint *vep,
+				  struct v4l2_async_connection *asd);
+
+int
+v4l2_async_nf_parse_fwnode_endpoints(struct device *dev,
+				     struct v4l2_async_notifier *notifier,
+				     size_t asd_struct_size,
+				     parse_endpoint_func parse_endpoint);
+
 #endif /* _V4L2_FWNODE_H */

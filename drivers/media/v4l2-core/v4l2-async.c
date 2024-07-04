@@ -685,7 +685,7 @@ void v4l2_async_nf_cleanup(struct v4l2_async_notifier *notifier)
 }
 EXPORT_SYMBOL_GPL(v4l2_async_nf_cleanup);
 
-static void __v4l2_async_nf_add_connection(struct v4l2_async_notifier *notifier,
+void __v4l2_async_nf_add_connection(struct v4l2_async_notifier *notifier,
 					   struct v4l2_async_connection *asc)
 {
 	mutex_lock(&list_lock);
@@ -694,6 +694,7 @@ static void __v4l2_async_nf_add_connection(struct v4l2_async_notifier *notifier,
 
 	mutex_unlock(&list_lock);
 }
+EXPORT_SYMBOL_GPL(__v4l2_async_nf_add_connection);
 
 struct v4l2_async_connection *
 __v4l2_async_nf_add_fwnode(struct v4l2_async_notifier *notifier,

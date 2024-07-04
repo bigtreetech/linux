@@ -456,6 +456,8 @@ static int rockchip_inno_csidphy_probe(struct platform_device *pdev)
 
 	pm_runtime_enable(dev);
 
+	dev_info(dev, "inno-csidphy: probe successfully!\n");
+
 	return 0;
 }
 

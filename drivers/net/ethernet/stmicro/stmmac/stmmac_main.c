@@ -1150,6 +1150,7 @@ static int stmmac_init_phy(struct net_device *dev)
 	struct fwnode_handle *phy_fwnode;
 	struct fwnode_handle *fwnode;
 	int ret;
+	netdev_err(priv->dev, "msq: stmmac_init_phy\n");
 
 	if (!phylink_expects_phy(priv->phylink))
 		return 0;
@@ -1194,6 +1195,7 @@ static int stmmac_init_phy(struct net_device *dev)
 		device_set_wakeup_capable(priv->device, !!wol.supported);
 		device_set_wakeup_enable(priv->device, !!wol.wolopts);
 	}
+	netdev_err(priv->dev, "msq: test\n");
 
 	return ret;
 }
