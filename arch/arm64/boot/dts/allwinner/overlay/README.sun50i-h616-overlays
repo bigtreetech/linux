@@ -1,0 +1,137 @@
+This document describes overlays provided in the kernel packages
+For generic Armbian overlays documentation please see
+https://docs.armbian.com/Hardware_Allwinner_overlays/
+
+### Platform:
+
+sun50i-h616 (Allwinner H616)
+
+### Platform details:
+
+Supported pin banks: PB, PC, PD, PH
+
+Both SPI controllers have only one hardware CS pin exposed,
+adding fixed software (GPIO) chip selects is possible with a separate overlay
+
+I2C controller 2 (PE14, PE15) pins are used for non-I2C CSI functions or are not available
+on supported boards, so this controller is not supported in provided overlays
+
+### Provided overlays:
+
+- spi-spidev
+- spidev0_0
+- spidev1_0
+- spidev1_1
+- spidev1_2
+- i2c0
+- ir
+- tft35_spi
+- tft35_spi25
+- mcp2515
+- pwm
+- disable_uart0
+- ws2812
+- light
+
+### Overlay details:
+
+### spi-spidev
+
+Activates SPIdev device node (/dev/spidevX.Y) for userspace SPI access,
+where X is the bus number and Y is the CS number
+
+SPI 0 pins (MOSI, MISO, SCK, CS): PC2, PC4, PC0, PC3
+SPI 1 pins (MOSI, MISO, SCK, CS): PH7, PH8, PH6, PH5
+
+Parameters:
+
+param_spidev_spi_bus (int)
+	SPI bus to activate SPIdev support on
+	Required
+	Supported values: 0, 1
+
+param_spidev_spi_cs (int)
+	SPI chip select number
+	Optional
+	Default: 0
+	Supported values: 0, 1
+	Using chip select 1 requires using "spi-add-cs1" overlay
+
+param_spidev_max_freq (int)
+	Maximum SPIdev frequency
+	Optional
+	Default: 1000000
+	Range: 3000 - 100000000
+
+### spidev0_0
+
+Activates spi0 with cs0
+
+SPI0 CS0 pins (MOSI, MISO, SCK, CS): PC2, PC4, PC0, PC3
+
+### spidev1_0, spidev1_1, spidev1_2
+
+Activates spi1 with cs0, cs1, cs2
+
+SPI1 pins (MOSI, MISO, SCK): PH7, PH8, PH6
+CS pins (0, 1, 2):
+  CB1-SD: PC11, PC7, PC13
+  CB1-eMMC: PI5, PI14, PI7
+
+### i2c0
+
+Activates TWI/I2C bus 0
+
+I2C0 pins (SCL, SDA): PI5, PI6
+
+### ir
+
+Activates IR (Infrared remote) receiver
+
+IR pin: PH10
+
+### tft35_spi, tft35_spi25
+
+Activates TFT35 (st7796s) screen
+
+SPI pins: spidev1_1
+DC pin:
+  CB1-SD: PC14
+  CB1-eMMC: PI15
+I2C_GPIO pins (SCL, SDA):
+  CB1-SD: PC10, PC12
+  CB1-eMMC: PI4, PI6
+
+### mcp2515
+
+Activates MCP2515 (spi to can)
+
+SPI pins: spidev1_0
+IRQ pin:
+  CB1-SD: PC9
+  CB1-eMMC: PI3
+
+### pwm
+
+Activates PWM
+
+### disable_uart0
+
+Disable UART0 console output, these pins can be used for other features
+
+### ws2812
+
+Activates ws2812 RGB
+
+pin:
+  CB1-SD: PC14
+  CB1-eMMC: PI15
+
+### light
+
+Activates light sensor for BIGTREETECH Pad7.
+Enable 'i2c_gpio' and 'pwm', disable 'uart0'.
+
+I2C_GPIO pins (SCL, SDA):
+  CB1-SD: PC10, PC12
+  CB1-eMMC: PI4, PI6
