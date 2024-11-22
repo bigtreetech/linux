@@ -267,8 +267,8 @@ static void ac300_ephy_enable(struct ephy_res *priv)
 
 	phy_write(priv->ac300, 0x00, 0x1fb7); /* clk gating (24MHz clock)*/
 
-	//phy_write(priv->ac300, 0x05, 0xa81f);
-	phy_write(priv->ac300, 0x05, 0xa819);
+	phy_write(priv->ac300, 0x05, 0xa81f);
+	// phy_write(priv->ac300, 0x05, 0xa819);
 
 	phy_write(priv->ac300, 0x06, 0x00);
 
