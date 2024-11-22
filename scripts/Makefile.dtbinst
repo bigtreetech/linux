@@ -19,8 +19,10 @@ include $(kbuild-file)
 
 dtbs    := $(addprefix $(dst)/, $(dtb-y) $(if $(CONFIG_OF_ALL_DTBS),$(dtb-)))
 subdirs := $(addprefix $(obj)/, $(subdir-y) $(subdir-m))
+script-files	:= $(addprefix $(dst)/, $(scr-y))
+readme-files	:= $(addprefix $(dst)/, $(dtbotxt-y))
 
-__dtbs_install: $(dtbs) $(subdirs)
+__dtbs_install: $(dtbs) $(script-files) $(readme-files) $(subdirs)
 	@:
 
 quiet_cmd_dtb_install = INSTALL $@
@@ -32,8 +34,18 @@ $(dst)/%.dtb: $(obj)/%.dtb
 $(dst)/%.dtbo: $(obj)/%.dtbo
 	$(call cmd,dtb_install)
 
+$(dst)/%.scr: $(obj)/%.scr
+	$(call cmd,dtb_install)
+
+$(dst)/README.%-overlays: $(obj)/README.%-overlays
+	$(call cmd,dtb_install)
+
 PHONY += $(subdirs)
 $(subdirs):
-	$(Q)$(MAKE) $(dtbinst)=$@ dst=$(if $(CONFIG_ARCH_WANT_FLAT_DTB_INSTALL),$(dst),$(patsubst $(obj)/%,$(dst)/%,$@))
+	$(Q)if [ $(subst $(obj)/,,$@) = overlay ]; then \
+	$(MAKE) $(dtbinst)=$@ dst=$(patsubst $(obj)/%,$(dst)/%,$@); \
+	else \
+	$(MAKE) $(dtbinst)=$@ dst=$(if $(CONFIG_ARCH_WANT_FLAT_DTB_INSTALL),$(dst),$(patsubst $(obj)/%,$(dst)/%,$@)); \
+	fi
 
 .PHONY: $(PHONY)
