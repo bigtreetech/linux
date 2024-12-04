@@ -395,7 +395,7 @@
 		pwm3: pwm3@0300a000 {
 			compatible = "allwinner,sunxi-pwm3";
 			pinctrl-names = "default";
-			pinctrl-0 = <&pwm3_pi_pin>;
+			pinctrl-0 = <&pwm3_ph_pin>;
 		};
 
 		pwm4: pwm4@0300a000 {
@@ -511,6 +511,11 @@
 			pwm2_ph_pin: pwm2-ph-pin {
 				pins = "PH2";
 				function = "pwm2";
+			};
+
+			pwm3_ph_pin: pwm3-ph-pin {
+				pins = "PH0";
+				function = "pwm3";
 			};
 
 			pwm3_pi_pin: pwm3-pi-pin {
