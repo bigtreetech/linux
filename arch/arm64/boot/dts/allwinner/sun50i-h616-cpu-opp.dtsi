@@ -7,7 +7,7 @@
 		compatible = "allwinner,sun50i-h616-operating-points";
 		nvmem-cells = <&cpu_speed_grade>;
 		opp-shared;
- 
+
 		opp-480000000 {
 			clock-latency-ns = <244144>; /* 8 32k periods */
 			opp-hz = /bits/ 64 <480000000>;
@@ -27,7 +27,7 @@
 		opp-792000000 {
 			clock-latency-ns = <244144>; /* 8 32k periods */
 			opp-hz = /bits/ 64 <792000000>;
-		        opp-microvolt-speed0 = <860000 860000 1100000>;
+			opp-microvolt-speed0 = <860000 860000 1100000>;
 			opp-microvolt-speed1 = <940000 940000 1100000>;
 			opp-microvolt-speed2 = <940000 940000 1100000>;
 		};
@@ -61,15 +61,15 @@
 &cpu0 {
 	operating-points-v2 = <&cpu_opp_table>;
 };
- 
+
 &cpu1 {
 	operating-points-v2 = <&cpu_opp_table>;
 };
- 
+
 &cpu2 {
 	operating-points-v2 = <&cpu_opp_table>;
 };
- 
+
 &cpu3 {
 	operating-points-v2 = <&cpu_opp_table>;
 };
