@@ -85,4 +85,12 @@ config DRM_SUN8I_TCON_TOP
 	  TCON TOP is responsible for configuring display pipeline for
 	  HDMI, TVE and LCD.
 
+config DRM_SUN50I_PLANES
+	tristate
+	default DRM_SUN4I if DRM_SUN8I_MIXER!=n
+	help
+	  Chose this option if you have an Allwinner Soc with the
+	  Display Engine 3.3 or newer. Planes are shared resource
+	  between multiple mixers.
+
 endif
