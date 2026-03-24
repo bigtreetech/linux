@@ -208,7 +208,7 @@ static int asoc_simple_dai_init(struct snd_soc_pcm_runtime *rtd)
 {
 	int i;
 	struct snd_soc_card *card = rtd->card;
-	struct snd_soc_dapm_context *dapm = &card->dapm;
+	struct snd_soc_dapm_context *dapm = card->dapm;
 
 	const struct snd_kcontrol_new *controls = card->controls;
 
