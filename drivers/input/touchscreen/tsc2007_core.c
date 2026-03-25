@@ -29,6 +29,9 @@
 #include <linux/platform_data/tsc2007.h>
 #include "tsc2007.h"
 
+#define TSC2007_POLL_INTERVAL_MS	17 /* 17ms = 60fps */
+#define TSC2007_DEBOUNCE_COUNT		1
+
 int tsc2007_xfer(struct tsc2007 *tsc, u8 cmd)
 {
 	s32 data;
@@ -174,6 +177,46 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
 	return IRQ_HANDLED;
 }
 
+static void ts2007_ts_poll(struct input_dev *input_dev)
+{
+	struct tsc2007 *ts = input_get_drvdata(input_dev);
+	struct ts_event tc;
+	u32 rt;
+	bool pendown;
+
+	if(ts->stopped)
+		return;
+
+	mutex_lock(&ts->mlock);
+	tsc2007_read_values(ts, &tc);
+	mutex_unlock(&ts->mlock);
+
+	rt = tsc2007_calculate_resistance(ts, &tc);
+	pendown = (rt > 0 && (rt <= ts->max_rt));
+
+	if (pendown) {
+		if (ts->debounce) {
+			ts->debounce--;
+			return;
+		}
+
+		if (!ts->pendown) {
+			input_report_key(input_dev, BTN_TOUCH, 1);
+			ts->pendown = true;
+		}
+
+		touchscreen_report_pos(input_dev, &ts->prop, tc.x, tc.y, false);
+		input_report_abs(input_dev, ABS_PRESSURE, rt);
+		input_sync(input_dev);
+	} else if (ts->pendown) {
+		ts->pendown = false;
+		ts->debounce = TSC2007_DEBOUNCE_COUNT;
+		input_report_key(input_dev, BTN_TOUCH, 0);
+		input_report_abs(input_dev, ABS_PRESSURE, 0);
+		input_sync(input_dev);
+	}
+}
+
 static void tsc2007_stop(struct tsc2007 *ts)
 {
 	ts->stopped = true;
@@ -190,6 +233,8 @@ static int tsc2007_open(struct input_dev *input_dev)
 	int err;
 
 	ts->stopped = false;
+	ts->pendown = false;
+	ts->debounce = TSC2007_DEBOUNCE_COUNT;
 	mb();
 
 	if (ts->irq)
@@ -400,6 +445,16 @@ static int tsc2007_probe(struct i2c_client *client)
 		dev_err(&client->dev,
 			"Failed to register with IIO: %d\n", err);
 		return err;
+	}
+
+	if (!ts->irq) {
+		err = input_setup_polling(ts->input, ts2007_ts_poll);
+		if (err) {
+			dev_err(&ts->client->dev,
+				 "could not set up polling mode, %d\n", err);
+			return err;
+		}
+		input_set_poll_interval(ts->input, TSC2007_POLL_INTERVAL_MS);
 	}
 
 	return 0;

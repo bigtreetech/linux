@@ -83,6 +83,9 @@ struct tsc2007 {
 	void			(*clear_penirq)(void);
 
 	struct mutex		mlock;
+
+	bool		pendown;
+	int			debounce;
 };
 
 int tsc2007_xfer(struct tsc2007 *tsc, u8 cmd);
