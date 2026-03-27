@@ -252,7 +252,7 @@ static const struct goodix_chip_data *goodix_get_chip_data(const char *id)
 
 static int goodix_ts_read_input_report(struct goodix_ts_data *ts, u8 *data)
 {
-	unsigned long max_timeout;
+	// unsigned long max_timeout;
 	int touch_num;
 	int error;
 	u16 addr = GOODIX_READ_COOR_ADDR;
@@ -268,8 +268,8 @@ static int goodix_ts_read_input_report(struct goodix_ts_data *ts, u8 *data)
 	 * not set as soon as the interrupt is raised, but slightly after.
 	 * This takes around 10 ms to happen, so we poll for 20 ms.
 	 */
-	max_timeout = jiffies + msecs_to_jiffies(GOODIX_BUFFER_STATUS_TIMEOUT);
-	do {
+	// max_timeout = jiffies + msecs_to_jiffies(GOODIX_BUFFER_STATUS_TIMEOUT);
+	// do {
 		error = goodix_i2c_read(ts->client, addr, data,
 					header_contact_keycode_size);
 		if (error)
@@ -299,8 +299,8 @@ static int goodix_ts_read_input_report(struct goodix_ts_data *ts, u8 *data)
 				return 0;
 		}
 
-		usleep_range(1000, 2000); /* Poll every 1 - 2 ms */
-	} while (time_before(jiffies, max_timeout));
+	// 	usleep_range(1000, 2000); /* Poll every 1 - 2 ms */
+	// } while (time_before(jiffies, max_timeout));
 
 	/*
 	 * The Goodix panel will send spurious interrupts after a
