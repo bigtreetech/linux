@@ -1,0 +1,46 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target = <&gpu>;
+			__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target = <&de>;
+			__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@2 {
+		target = <&hdmi>;
+			__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@3 {
+		target = <&ahub_dam_plat>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@4 {
+		target = <&ahub1_plat>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@5 {
+		target = <&ahub1_mach>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+};

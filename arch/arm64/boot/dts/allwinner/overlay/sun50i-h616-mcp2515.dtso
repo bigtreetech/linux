@@ -1,0 +1,25 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target = <&pio>;
+		__overlay__ {
+			input-debounce = <1 1 1 1 1 1 1 1>;
+		};
+	};
+
+	fragment@1 {
+		target = <&spi1>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@2 {
+		target = <&can>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+};
