@@ -31,6 +31,34 @@ struct i2c_gpio_private_data {
 #endif
 };
 
+static void i2c_gpio_direction_sdain(void *data)
+{
+	struct i2c_gpio_private_data *priv = data;
+
+	gpiod_direction_input(priv->sda);
+}
+
+static void i2c_gpio_direction_sdaout(void *data, int state)
+{
+	struct i2c_gpio_private_data *priv = data;
+
+	gpiod_direction_output(priv->sda, state);
+}
+
+static void i2c_gpio_direction_sclin(void *data)
+{
+	struct i2c_gpio_private_data *priv = data;
+
+	gpiod_direction_input(priv->scl);
+}
+
+static void i2c_gpio_direction_sclout(void *data, int state)
+{
+	struct i2c_gpio_private_data *priv = data;
+
+	gpiod_direction_output(priv->scl, state);
+}
+
 /*
  * Toggle SDA by changing the output value of the pin. This is only
  * valid for pins configured as open drain (i.e. setting the value
@@ -395,6 +423,10 @@ static int i2c_gpio_probe(struct platform_device *pdev)
 	else
 		bit_data->can_do_atomic = true;
 
+	bit_data->sdain = i2c_gpio_direction_sdain;
+	bit_data->sdaout = i2c_gpio_direction_sdaout;
+	bit_data->sclin = i2c_gpio_direction_sclin;
+	bit_data->sclout = i2c_gpio_direction_sclout;
 	bit_data->setsda = i2c_gpio_setsda_val;
 	bit_data->setscl = i2c_gpio_setscl_val;
 

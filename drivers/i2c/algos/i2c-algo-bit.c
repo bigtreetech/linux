@@ -45,6 +45,10 @@ MODULE_PARM_DESC(i2c_debug,
 
 /* --- setting states on the bus with the right timing: ---------------	*/
 
+#define sdain(adap)			adap->sdain(adap->data)
+#define sdaout(adap)		adap->sdaout(adap->data, 1)
+#define sclin(adap)			adap->sclin(adap->data)
+#define sclout(adap)		adap->sclout(adap->data, 1)
 #define setsda(adap, val)	adap->setsda(adap->data, val)
 #define setscl(adap, val)	adap->setscl(adap->data, val)
 #define getsda(adap)		adap->getsda(adap->data)
@@ -82,6 +86,7 @@ static int sclhi(struct i2c_algo_bit_data *adap)
 	if (!adap->getscl)
 		goto done;
 
+	sclin(adap);
 	start = jiffies;
 	while (!getscl(adap)) {
 		/* This hw knows how to read the clock line, so we wait
@@ -95,6 +100,7 @@ static int sclhi(struct i2c_algo_bit_data *adap)
 			 */
 			if (getscl(adap))
 				break;
+			sclout(adap);
 			return -ETIMEDOUT;
 		}
 		cpu_relax();
@@ -104,6 +110,7 @@ static int sclhi(struct i2c_algo_bit_data *adap)
 		pr_debug("i2c-algo-bit: needed %ld jiffies for SCL to go high\n",
 			 jiffies - start);
 #endif
+	sclout(adap);
 
 done:
 	udelay(adap->udelay);
@@ -176,9 +183,11 @@ static int i2c_outb(struct i2c_adapter *i2c_adap, unsigned char c)
 		scllo(adap);
 	}
 	sdahi(adap);
+	sdain(adap);
 	if (sclhi(adap) < 0) { /* timeout */
 		bit_dbg(1, &i2c_adap->dev,
 			"i2c_outb: 0x%02x, timeout at ack\n", (int)c);
+		sdaout(adap);
 		return -ETIMEDOUT;
 	}
 
@@ -191,6 +200,7 @@ static int i2c_outb(struct i2c_adapter *i2c_adap, unsigned char c)
 		ack ? "A" : "NA");
 
 	scllo(adap);
+	sdaout(adap);
 	return ack;
 	/* assert: scl is low (sda undef) */
 }
@@ -206,11 +216,13 @@ static int i2c_inb(struct i2c_adapter *i2c_adap)
 
 	/* assert: scl is low */
 	sdahi(adap);
+	sdain(adap);
 	for (i = 0; i < 8; i++) {
 		if (sclhi(adap) < 0) { /* timeout */
 			bit_dbg(1, &i2c_adap->dev,
 				"i2c_inb: timeout at bit #%d\n",
 				7 - i);
+			sdaout(adap);
 			return -ETIMEDOUT;
 		}
 		indata *= 2;
@@ -219,6 +231,7 @@ static int i2c_inb(struct i2c_adapter *i2c_adap)
 		setscl(adap, 0);
 		udelay(i == 7 ? adap->udelay / 2 : adap->udelay);
 	}
+	sdaout(adap);
 	/* assert: scl is low */
 	return indata;
 }

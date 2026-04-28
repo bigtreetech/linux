@@ -20,6 +20,10 @@
  */
 struct i2c_algo_bit_data {
 	void *data;		/* private data for lowlevel routines */
+	void (*sdain) (void *data);
+	void (*sdaout) (void *data, int state);
+	void (*sclin) (void *data);
+	void (*sclout) (void *data, int state);
 	void (*setsda) (void *data, int state);
 	void (*setscl) (void *data, int state);
 	int  (*getsda) (void *data);
